@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gradle_clojure.plugin.tasks;
+package gradle_clojure.plugin.tasks.clojure;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.gradle.api.Action;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 
 public final class ClojureCompileOptions implements Serializable {

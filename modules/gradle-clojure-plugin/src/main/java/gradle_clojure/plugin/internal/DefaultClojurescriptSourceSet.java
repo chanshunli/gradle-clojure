@@ -15,28 +15,27 @@
  */
 package gradle_clojure.plugin.internal;
 
+import gradle_clojure.plugin.tasks.clojurescript.ClojurescriptSourceSet;
 import org.gradle.api.Action;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.internal.file.SourceDirectorySetFactory;
 
-import gradle_clojure.plugin.tasks.clojure.ClojureSourceSet;
+public class DefaultClojurescriptSourceSet implements ClojurescriptSourceSet {
+  private final SourceDirectorySet clojurescript;
 
-public class DefaultClojureSourceSet implements ClojureSourceSet {
-  private final SourceDirectorySet clojure;
-
-  public DefaultClojureSourceSet(String name, SourceDirectorySetFactory sourceDirectorySetFactory) {
-    this.clojure = sourceDirectorySetFactory.create(name);
-    this.clojure.getFilter().include("**/*.clj", "**/*.cljc");
+  public DefaultClojurescriptSourceSet(String name, SourceDirectorySetFactory sourceDirectorySetFactory) {
+    this.clojurescript = sourceDirectorySetFactory.create(name);
+    this.clojurescript.getFilter().include("**/*.cljs", "**/*.cljc", "**/*.clj");
   }
 
   @Override
-  public SourceDirectorySet getClojure() {
-    return clojure;
+  public SourceDirectorySet getClojurescript() {
+    return clojurescript;
   }
 
   @Override
-  public ClojureSourceSet clojure(Action<? super SourceDirectorySet> configureAction) {
-    configureAction.execute(clojure);
+  public ClojurescriptSourceSet clojurescript(Action<? super SourceDirectorySet> configureAction) {
+    configureAction.execute(clojurescript);
     return this;
   }
 }

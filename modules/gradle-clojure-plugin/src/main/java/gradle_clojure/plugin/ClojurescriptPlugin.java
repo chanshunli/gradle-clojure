@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gradle_clojure.plugin.tasks;
+package gradle_clojure.plugin;
 
-import org.gradle.api.Action;
-import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
 
-public interface ClojureSourceSet {
-  SourceDirectorySet getClojure();
-
-  ClojureSourceSet clojure(Action<? super SourceDirectorySet> configureAction);
+public class ClojurescriptPlugin implements Plugin<Project> {
+  @Override
+  public void apply(Project project) {
+    project.getPlugins().apply(ClojurescriptBasePlugin.class);
+    project.getPlugins().apply(JavaPlugin.class);
+  }
 }

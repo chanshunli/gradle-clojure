@@ -15,8 +15,9 @@
  */
 package gradle_clojure.plugin;
 
-import javax.inject.Inject;
-
+import gradle_clojure.plugin.internal.DefaultClojurescriptSourceSet;
+import gradle_clojure.plugin.tasks.clojurescript.ClojurescriptCompile;
+import gradle_clojure.plugin.tasks.clojurescript.ClojurescriptSourceSet;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.internal.file.SourceDirectorySetFactory;
@@ -24,16 +25,15 @@ import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.internal.SourceSetUtil;
+import org.gradle.api.tasks.SourceSet;
 
-import gradle_clojure.plugin.internal.DefaultClojureSourceSet;
-import gradle_clojure.plugin.tasks.clojure.ClojureCompile;
-import gradle_clojure.plugin.tasks.clojure.ClojureSourceSet;
+import javax.inject.Inject;
 
-public class ClojureBasePlugin implements Plugin<Project> {
+public class ClojurescriptBasePlugin implements Plugin<Project> {
   private final SourceDirectorySetFactory sourceDirectorySetFactory;
 
   @Inject
-  public ClojureBasePlugin(SourceDirectorySetFactory sourceDirectorySetFactory) {
+  public ClojurescriptBasePlugin(SourceDirectorySetFactory sourceDirectorySetFactory) {
     this.sourceDirectorySetFactory = sourceDirectorySetFactory;
   }
 
@@ -45,28 +45,26 @@ public class ClojureBasePlugin implements Plugin<Project> {
   }
 
   private void configureSourceSetDefaults(Project project) {
-    project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().all(sourceSet -> {
-      ClojureSourceSet clojureSourceSet = new DefaultClojureSourceSet("clojure", sourceDirectorySetFactory);
-      new DslObject(sourceSet).getConvention().getPlugins().put("clojure", clojureSourceSet);
+    project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().all((SourceSet sourceSet) -> {
+      ClojurescriptSourceSet clojurescriptSourceSet = new DefaultClojurescriptSourceSet("clojurescript", sourceDirectorySetFactory);
+      new DslObject(sourceSet).getConvention().getPlugins().put("clojurescript", clojurescriptSourceSet);
 
-      clojureSourceSet.getClojure().srcDir(String.format("src/%s/clojure", sourceSet.getName()));
+      clojurescriptSourceSet.getClojurescript().srcDir(String.format("src/%s/clojurescript", sourceSet.getName()));
       // in case the clojure source overlaps with the resources source, exclude any clojure code
       // from resources
-      sourceSet.getResources().getFilter().exclude(element -> clojureSourceSet.getClojure().contains(element.getFile()));
-      sourceSet.getAllSource().source(clojureSourceSet.getClojure());
+      sourceSet.getResources().getFilter().exclude(element -> clojurescriptSourceSet.getClojurescript().contains(element.getFile()));
+      sourceSet.getAllSource().source(clojurescriptSourceSet.getClojurescript());
 
-      String compileTaskName = sourceSet.getCompileTaskName("clojure");
-      ClojureCompile compile = project.getTasks().create(compileTaskName, ClojureCompile.class);
-      compile.setDescription(String.format("Compiles the %s Clojure source.", sourceSet.getName()));
-      compile.setSource(clojureSourceSet.getClojure());
+      String compileTaskName = sourceSet.getCompileTaskName("clojurescript");
+      ClojurescriptCompile compile = project.getTasks().create(compileTaskName, ClojurescriptCompile.class);
+      compile.setDescription(String.format("Compiles the %s Clojurescript source.", sourceSet.getName()));
+      compile.setSource(clojurescriptSourceSet.getClojurescript());
 
       // TODO presumably at some point this will allow providers, so we should switch to that
       // instead of convention mapping
       compile.getConventionMapping().map("classpath", sourceSet::getCompileClasspath);
-      // TODO switch to provider
-      compile.getConventionMapping().map("namespaces", compile::findNamespaces);
 
-      SourceSetUtil.configureOutputDirectoryForSourceSet(sourceSet, clojureSourceSet.getClojure(), compile, project);
+      SourceSetUtil.configureOutputDirectoryForSourceSet(sourceSet, clojurescriptSourceSet.getClojurescript(), compile, project);
 
       project.getTasks().getByName(sourceSet.getClassesTaskName()).dependsOn(compile);
     });

@@ -31,7 +31,7 @@ import org.gradle.api.plugins.internal.SourceSetUtil;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.testing.Test;
 
-import gradle_clojure.plugin.tasks.ClojureCompile;
+import gradle_clojure.plugin.tasks.clojure.ClojureCompile;
 
 public class ClojurePlugin implements Plugin<Project> {
   @Override

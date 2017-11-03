@@ -14,6 +14,9 @@ dependencies {
   // clojure runtime
   compileOnly 'org.clojure:clojure:1.8.0'
   compileOnly 'org.projectodd.shimdandy:shimdandy-api:1.2.0'
+  // TODO This is a workaround for classpath issue: older Guava is loaded without this dependency
+  // java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkState(ZLjava/lang/String;Ljava/lang/Object;)V, compiling:(closure.clj:100:1)
+  compile 'com.google.guava:guava:23.0'
 
   // compat testing
   compatTestCompile gradleTestKit()
@@ -72,6 +75,14 @@ gradlePlugin {
       id = 'gradle-clojure.clojure'
       implementationClass = 'gradle_clojure.plugin.ClojurePlugin'
     }
+    clojurescriptBase {
+      id = 'gradle-clojure.clojurescript-base'
+      implementationClass = 'gradle_clojure.plugin.ClojurescriptBasePlugin'
+    }
+    clojurescript {
+      id = 'gradle-clojure.clojurescript'
+      implementationClass = 'gradle_clojure.plugin.ClojurescriptPlugin'
+    }
   }
 }
 
@@ -89,6 +100,11 @@ pluginBundle {
       id = 'gradle-clojure.clojure'
       displayName = 'Clojure language plugin for Gradle'
       tags = ['clojure', 'language']
+    }
+    clojurescript {
+      id = 'gradle-clojure.clojurescript'
+      displayName = 'Clojurescript language plugin for Gradle'
+      tags = ['clojurescript', 'language']
     }
   }
   mavenCoordinates {
